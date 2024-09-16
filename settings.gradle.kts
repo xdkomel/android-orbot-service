@@ -19,7 +19,9 @@ dependencyResolutionManagement {
                 username = authToken 
             }
         }
-        maven { url = uri("https://raw.githubusercontent.com/guardianproject/gpmaven/master") }
+        maven { 
+            url = uri("https://raw.githubusercontent.com/guardianproject/gpmaven/master") 
+        }
     }
 }
 
