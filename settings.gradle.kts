@@ -2,14 +2,14 @@ pluginManagement {
     val properties = java.util.Properties().apply {
         file("gradle.properties").inputStream().use(::load)
     }
-    val authToken: String? = properties.getProperty("authToken")
+    val authToken: String = properties.getProperty("authToken") ?: "jp_onlot79oi2ord3hp0ftluqra87"
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
         maven { 
             url = uri("https://jitpack.io")
-            credentials { username = authToken ?: "" }
+            credentials { username = authToken }
         }
     }
 }
@@ -17,14 +17,14 @@ dependencyResolutionManagement {
     val properties = java.util.Properties().apply {
         file("gradle.properties").inputStream().use(::load)
     }
-    val authToken: String? = properties.getProperty("authToken")
+    val authToken: String = properties.getProperty("authToken") ?: "jp_onlot79oi2ord3hp0ftluqra87"
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
         maven { 
             url = uri("https://jitpack.io")
-            credentials { username = authToken ?: "" }
+            credentials { username = authToken }
         }
         maven { 
             url = uri("https://raw.githubusercontent.com/guardianproject/gpmaven/master") 
