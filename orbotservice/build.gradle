@@ -3,7 +3,7 @@ apply from: 'commons.gradle'
 apply from: 'dependencies.gradle'
 apply plugin: 'maven-publish'
 
-group = 'com.github.CGitton'
+group = 'com.github.GGitton'
 
 android {
     ndkVersion '21.3.6528147'
@@ -57,7 +57,7 @@ dependencies {
     api libs.guardian_jtorctl
 
     //use locally built ipt_proxy+go_tun2socks
-    implementation("com.github.cgitton:null-end-orbot-core:main-0a0be79dd9-1")
+    implementation('com.github.GGitton:NULL-END-Orbot-core:1.0.0')
 
     api libs.tor_android
             implementation(
@@ -85,7 +85,7 @@ dependencies {
 publishing {
     publications {
         release(MavenPublication) {
-            groupId = 'com.github.CGitton'
+            groupId = 'com.github.GGitton'
             artifactId = 'NULL-END-orbot-service-android'
             version = '1.0.0'
             afterEvaluate {

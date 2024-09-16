@@ -4,7 +4,8 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
         maven { 
-            url = uri("https://jitpack.io") 
+            url = uri("https://jitpack.io")
+            credentials { username = System.getProperty("authToken") }
         }
     }
 }
@@ -14,10 +15,8 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { 
-            url = uri("https://jitpack.io") 
-            credentials { 
-                username = authToken 
-            }
+            url = uri("https://jitpack.io")
+            credentials { username = System.getProperty("authToken") }
         }
         maven { 
             url = uri("https://raw.githubusercontent.com/guardianproject/gpmaven/master") 
