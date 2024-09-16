@@ -1,5 +1,5 @@
 jdk:
   - openjdk17
 
-before_install:
-  - echo authToken=$TOKEN >> ~/.gradle/gradle.properties
+# before_install:
+#   - echo authToken=$TOKEN >> ~/.gradle/gradle.properties
