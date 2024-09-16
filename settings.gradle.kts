@@ -5,9 +5,6 @@ pluginManagement {
         gradlePluginPortal()
         maven { 
             url = uri("https://jitpack.io") 
-            credentials {
-                username = authToken
-            }
         }
     }
 }
