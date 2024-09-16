@@ -1,0 +1,40 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <!-- for Android 13 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN"/>
+            <category android:name="android.intent.category.LAUNCHER"/>
+        </intent>
+    </queries>
+    <application>
+        <provider
+            android:name="org.torproject.android.ui.v3onionservice.OnionServiceContentProvider"
+            android:authorities="${applicationId}.org.torproject.android.ui.v3onionservice"
+            android:exported="false"/>
+        <provider
+            android:name="org.torproject.android.ui.v3onionservice.clientauth.ClientAuthContentProvider"
+            android:authorities="${applicationId}.org.torproject.android.ui.v3onionservice.clientauth"
+            android:exported="false"/>
+        <service
+            android:name="org.torproject.android.service.OrbotService"
+            android:enabled="true"
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            android:foregroundServiceType="dataSync"
+            android:stopWithTask="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.net.VpnService"/>
+            </intent-filter>
+        </service>
+    </application>
+
+</manifest>

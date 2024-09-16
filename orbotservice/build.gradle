@@ -1,0 +1,96 @@
+apply plugin: 'com.android.library'
+apply from: 'commons.gradle'
+apply from: 'dependencies.gradle'
+apply plugin: 'maven-publish'
+
+// group = 'com.github.AntonSannikov'
+
+android {
+    ndkVersion '21.3.6528147'
+
+    /**
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['./src/main/libs']
+        }
+    }**/
+
+    defaultConfig {
+        minSdkVersion 23
+        targetSdkVersion 33
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/androidx.localbroadcastmanager_localbroadcastmanager.version']
+        }
+    }
+
+
+    lint {
+        abortOnError true
+        checkReleaseBuilds false
+        disable 'InvalidPackage'
+        htmlReport true
+        lintConfig file('../lint.xml')
+        textReport false
+        xmlReport false
+    }
+    namespace 'org.torproject.android.service'
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+}
+
+dependencies {
+
+    api libs.guardian_jtorctl
+
+    //use locally built ipt_proxy+go_tun2socks
+    implementation("com.github.cgitton:null-end-orbot-core:main-0a0be79dd9-1")
+
+    api libs.tor_android
+            implementation(
+            libs.android_shell,
+            libs.androidx_core,
+            libs.androidx_localbroadcast,
+        //    libs.ipt_proxy,
+            libs.guardian_jsocks,
+        //    libs.portmapper,
+            libs.pcap_core,
+            libs.pcap_factory,
+            libs.androidx_work,
+            libs.androidx_work_kotlin
+    )
+
+    //building from AAR built from https://github.com/guardianproject/tor-android/commit/95eca2a8c9eb44068f11332d7731580a13ef7b28
+    //    until a new full release is done
+    //implementation files('../libs/tor-android-binary-release.aar')
+
+    implementation files('libs/geoip.jar')
+    implementation files('libs/OrbotLib-sources.jar')
+
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'com.github.AntonSannikov'
+            artifactId = 'orbot-service-android'
+            version = '1.0.5'
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
+}
