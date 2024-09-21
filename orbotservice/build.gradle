@@ -57,7 +57,7 @@ dependencies {
     api libs.guardian_jtorctl
 
     //use locally built ipt_proxy+go_tun2socks
-    implementation('com.github.GGitton:NULL-END-Orbot-core:1.0.0')
+    // implementation('com.github.GGitton:NULL-END-Orbot-core:1.0.0')
 
     api libs.tor_android
             implementation(
