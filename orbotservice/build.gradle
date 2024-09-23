@@ -56,26 +56,20 @@ dependencies {
 
     api libs.guardian_jtorctl
 
-    //use locally built ipt_proxy+go_tun2socks
-    // implementation('com.github.GGitton:NULL-END-Orbot-core:1.0.0')
+    implementation project(':OrbotLib')
 
     api libs.tor_android
-            implementation(
+    
+    implementation(
             libs.android_shell,
             libs.androidx_core,
             libs.androidx_localbroadcast,
-        //    libs.ipt_proxy,
-            libs.guardian_jsocks,
-        //    libs.portmapper,
             libs.pcap_core,
             libs.pcap_factory,
             libs.androidx_work,
-            libs.androidx_work_kotlin
+            libs.androidx_work_kotlin,
+            libs.guardian_jsocks
     )
-
-    //building from AAR built from https://github.com/guardianproject/tor-android/commit/95eca2a8c9eb44068f11332d7731580a13ef7b28
-    //    until a new full release is done
-    //implementation files('../libs/tor-android-binary-release.aar')
 
     implementation files('libs/geoip.jar')
     implementation files('libs/OrbotLib-sources.jar')

@@ -35,4 +35,5 @@ dependencyResolutionManagement {
 rootProject.name = "orbot_service_publisher"
 include(":app")
 include(":orbotservice")
+include(":OrbotLib")
  
