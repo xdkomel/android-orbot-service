@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.nullend.orbot_service_publisher"
-    compileSdk = 33
+    compileSdk = 34
 
     buildFeatures {
         buildConfig = true

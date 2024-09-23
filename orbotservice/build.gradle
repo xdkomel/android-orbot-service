@@ -17,7 +17,7 @@ android {
 
     defaultConfig {
         minSdkVersion 23
-        targetSdkVersion 33
+        targetSdkVersion 34
     }
 
     buildTypes {
@@ -67,12 +67,10 @@ dependencies {
             libs.pcap_core,
             libs.pcap_factory,
             libs.androidx_work,
-            libs.androidx_work_kotlin,
-            libs.guardian_jsocks
+            libs.androidx_work_kotlin
     )
 
     implementation files('libs/geoip.jar')
-    implementation files('libs/OrbotLib-sources.jar')
 
 }
 

@@ -35,9 +35,6 @@ import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.runjva.sourceforge.jsocks.protocol.ProxyServer;
-import com.runjva.sourceforge.jsocks.server.ServerAuthenticatorNone;
-
 import org.pcap4j.packet.IllegalRawDataException;
 import org.pcap4j.packet.IpPacket;
 import org.pcap4j.packet.IpSelector;
@@ -77,7 +74,6 @@ public class OrbotVpnManager implements Handler.Callback, OrbotConstants {
     private int mTorSocks = -1;
     private int mTorDns = -1;
     private int mTorHttp = -1;
-    private ProxyServer mSocksProxyServer;
     private final VpnService mService;
     private final SharedPreferences prefs;
     private DNSResolver mDnsResolver;
@@ -127,10 +123,6 @@ public class OrbotVpnManager implements Handler.Callback, OrbotConstants {
                         mTorSocks = torSocks;
                         mTorDns = torDns;
 
-                        if (!mIsLollipop) {
-                            startSocksBypass();
-                        }
-
                         setupTun2Socks(builder);
                     }
                 }
@@ -141,55 +133,10 @@ public class OrbotVpnManager implements Handler.Callback, OrbotConstants {
 
     public void restartVPN (VpnService.Builder builder) {
         stopVPN();
-        if (!mIsLollipop) {
-            startSocksBypass();
-        }
         setupTun2Socks(builder);
     }
 
-    private void startSocksBypass() {
-        new Thread() {
-            public void run() {
-
-                //generate the proxy port that the
-                if (sSocksProxyServerPort == -1) {
-                    try {
-                        sSocksProxyLocalhost = "127.0.0.1";// InetAddress.getLocalHost().getHostAddress();
-                        sSocksProxyServerPort = (int) ((Math.random() * 1000) + 10000);
-
-                    } catch (Exception e) {
-                        Log.e(TAG, "Unable to access localhost", e);
-                        throw new RuntimeException("Unable to access localhost: " + e);
-                    }
-                }
-
-                if (mSocksProxyServer != null) {
-                    stopSocksBypass();
-                }
-
-                try {
-                    mSocksProxyServer = new ProxyServer(new ServerAuthenticatorNone(null, null));
-                    ProxyServer.setVpnService(mService);
-                    mSocksProxyServer.start(sSocksProxyServerPort, 5, InetAddress.getLocalHost());
-
-                } catch (Exception e) {
-                    Log.e(TAG, "error getting host", e);
-                }
-            }
-        }.start();
-    }
-
-    private synchronized void stopSocksBypass() {
-        if (mSocksProxyServer != null) {
-            mSocksProxyServer.stop();
-            mSocksProxyServer = null;
-        }
-    }
-
     private void stopVPN() {
-        if (!mIsLollipop)
-            stopSocksBypass();
-
         keepRunningPacket = false;
 
         if (mInterface != null) {
