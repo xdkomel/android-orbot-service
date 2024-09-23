@@ -56,7 +56,7 @@ dependencies {
 
     api libs.guardian_jtorctl
 
-    implementation project(':OrbotLib')
+    api project(':OrbotLib')
 
     api libs.tor_android
     
