@@ -6,6 +6,9 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
+        maven {
+            url = uri("https://raw.githubusercontent.com/guardianproject/gpmaven/master")
+        }
     }
 }
 dependencyResolutionManagement {
@@ -26,4 +29,3 @@ rootProject.name = "orbot_service_publisher"
 include(":app")
 include(":orbotservice")
 include(":OrbotLib")
- 
