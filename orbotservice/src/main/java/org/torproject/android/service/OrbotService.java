@@ -434,6 +434,14 @@ public class OrbotService extends VpnService implements OrbotConstants {
         }
     }
 
+    private void registerReceiverApiSafe(BroadcastReceiver receiver, IntentFilter filter) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            registerReceiver(receiver, filter, RECEIVER_NOT_EXPORTED);
+            return;
+        }
+        registerReceiver(receiver, filter);
+    }
+
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void onCreate() {
@@ -479,7 +487,7 @@ public class OrbotService extends VpnService implements OrbotConstants {
                 filter.addAction(LOCAL_ACTION_NOTIFICATION_START);
 
                 mActionBroadcastReceiver = new ActionBroadcastReceiver();
-                registerReceiver(mActionBroadcastReceiver, filter);
+                registerReceiverApiSafe(mActionBroadcastReceiver, filter);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                     createNotificationChannel();
@@ -509,7 +517,7 @@ public class OrbotService extends VpnService implements OrbotConstants {
             IntentFilter ifilter = new IntentFilter();
             ifilter.addAction(Intent.ACTION_POWER_CONNECTED);
             ifilter.addAction(Intent.ACTION_POWER_DISCONNECTED);
-            registerReceiver(mPowerReceiver, ifilter);
+            registerReceiverApiSafe(mPowerReceiver, ifilter);
 
             manageSnowflakeProxy();
 
