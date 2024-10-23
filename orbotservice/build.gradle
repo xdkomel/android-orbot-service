@@ -56,9 +56,9 @@ dependencies {
 
     api libs.guardian_jtorctl
 
-    api project(':OrbotLib')
-
     api libs.tor_android
+
+    implementation 'com.github.xdkomel:android-orbot-core:91abfcf662'
     
     implementation(
             libs.android_shell,

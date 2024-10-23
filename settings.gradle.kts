@@ -9,6 +9,9 @@ pluginManagement {
         maven {
             url = uri("https://raw.githubusercontent.com/guardianproject/gpmaven/master")
         }
+        maven {
+            url = uri("https://jitpack.io")
+        }
     }
 }
 dependencyResolutionManagement {
@@ -22,10 +25,12 @@ dependencyResolutionManagement {
         maven { 
             url = uri("https://raw.githubusercontent.com/guardianproject/gpmaven/master") 
         }
+        maven {
+            url = uri("https://jitpack.io")
+        }
     }
 }
 
 rootProject.name = "orbot_service_publisher"
 include(":app")
 include(":orbotservice")
-include(":OrbotLib")
