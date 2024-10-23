@@ -27,6 +27,4 @@ public class TorConnectionNotifier {
     public static void setTorListener(@Nullable TorConnectionListener listener) {
         torListener = listener;
     }
-
-
 }

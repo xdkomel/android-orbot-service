@@ -6,7 +6,7 @@ apply plugin: 'maven-publish'
 group = 'com.github.GGitton'
 
 android {
-    ndkVersion '21.3.6528147'
+    // ndkVersion '21.3.6528147'
 
     /**
     sourceSets {

@@ -1,15 +1,2 @@
 configurations.maybeCreate("default")
 artifacts.add("default",file('OrbotLib.aar'))
-apply plugin: 'maven-publish'
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.findByName('release')
-                groupId = 'com.github.GGitton'
-                artifactId = 'NULL-END-Orbot-core'
-                version = '1.0.0'
-            }
-        }
-    }
-}

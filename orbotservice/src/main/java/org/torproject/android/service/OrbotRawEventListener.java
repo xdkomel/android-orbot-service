@@ -18,8 +18,8 @@ public class OrbotRawEventListener implements RawEventListener {
     private final OrbotService mService;
     private long mTotalBandwidthWritten, mTotalBandwidthRead;
     private final Map<String, DebugLoggingNode> hmBuiltNodes;
-    private Map<Integer, ExitNode> exitNodeMap;
-    private Set<Integer> ignoredInternalCircuits;
+    private final Map<Integer, ExitNode> exitNodeMap;
+    private final Set<Integer> ignoredInternalCircuits;
 
     private static final String CIRCUIT_BUILD_FLAG_IS_INTERNAL = "IS_INTERNAL";
     private static final String CIRCUIT_BUILD_FLAG_ONE_HOP_TUNNEL = "ONEHOP_TUNNEL";
@@ -76,8 +76,7 @@ public class OrbotRawEventListener implements RawEventListener {
     }
 
     private void handleBandwidth(long read, long written) {
-        String message = OrbotService.formatBandwidthCount(mService, read) + " \u2193" + " / " +
-                OrbotService.formatBandwidthCount(mService, written) + " \u2191";
+        String message = OrbotService.formatBandwidthCount(mService, read) + " ↓ / " + OrbotService.formatBandwidthCount(mService, written) + " ↑";
 
         if (mService.getCurrentStatus().equals(TorService.STATUS_ON))
             mService.showBandwidthNotification(message, read != 0 || written != 0);
@@ -133,17 +132,20 @@ public class OrbotRawEventListener implements RawEventListener {
 
     private void handleCircuitStatusExpandedNotifications(String circuitStatus, String circuitId, String path) {
         int id = Integer.parseInt(circuitId);
-        if (circuitStatus.equals(TorControlCommands.CIRC_EVENT_BUILT)) {
-            if (ignoredInternalCircuits.contains(id)) return; // this circuit won't be used by user clients
-            String[] nodes = path.split(",");
-            String exit = nodes[nodes.length - 1];
-            String fingerprint = exit.split("~")[0];
-            exitNodeMap.put(id, new ExitNode(fingerprint));
-        } else if (circuitStatus.equals(TorControlCommands.CIRC_EVENT_CLOSED)) {
-            exitNodeMap.remove(id);
-            ignoredInternalCircuits.remove(id);
-        } else if (circuitStatus.equals(TorControlCommands.CIRC_EVENT_FAILED)) {
-            ignoredInternalCircuits.remove(id);
+        switch (circuitStatus) {
+            case TorControlCommands.CIRC_EVENT_BUILT -> {
+                if (ignoredInternalCircuits.contains(id))
+                    return; // this circuit won't be used by user clients
+                String[] nodes = path.split(",");
+                String exit = nodes[nodes.length - 1];
+                String fingerprint = exit.split("~")[0];
+                exitNodeMap.put(id, new ExitNode(fingerprint));
+            }
+            case TorControlCommands.CIRC_EVENT_CLOSED -> {
+                exitNodeMap.remove(id);
+                ignoredInternalCircuits.remove(id);
+            }
+            case TorControlCommands.CIRC_EVENT_FAILED -> ignoredInternalCircuits.remove(id);
         }
     }
 
