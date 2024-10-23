@@ -58,7 +58,7 @@ dependencies {
 
     api libs.tor_android
 
-    implementation 'com.github.xdkomel:android-orbot-core:91abfcf662'
+    api project(':OrbotLib')
     
     implementation(
             libs.android_shell,
