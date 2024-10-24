@@ -1,10 +1,13 @@
 package com.nullend.orbot_service_publisher
 
+import android.app.Activity
 import android.content.Intent
 import android.net.VpnService
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,13 +28,30 @@ import com.nullend.orbot_service_publisher.ui.theme.Orbot_service_publisherTheme
 import org.torproject.android.service.OrbotConstants
 import org.torproject.android.service.OrbotHelper
 import org.torproject.android.service.OrbotService
+import org.torproject.android.service.TorConnectionListener
+import org.torproject.android.service.TorConnectionNotifier
 import org.torproject.android.service.util.Prefs
 
 
 class MainActivity : ComponentActivity() {
+    private val resultLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()) {
+            result -> activityResultOperator(result.resultCode)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ActivityResultNotifier.addListener(::onActivityResult)
+        TorConnectionNotifier.setTorListener(object : TorConnectionListener {
+            override fun onEvent(message: String?) {
+                Log.d("ORBOT TEST APP", "receive event $message")
+            }
+
+            override fun onLog(message: String?) {
+                Log.d("ORBOT TEST APP", "receive log $message")
+            }
+
+        })
+        ActivityResultNotifier.addListener(::activityResultOperator)
         initOrbot()
         setContent {
             Orbot_service_publisherTheme {
@@ -53,45 +73,48 @@ class MainActivity : ComponentActivity() {
         Prefs.putConnectionPathway(Prefs.PATHWAY_SNOWFLAKE)
     }
 
-    @Deprecated("just for test")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        ActivityResultNotifier.notify(resultCode)
-        super.onActivityResult(requestCode, resultCode, data)
-    }
 
-
-    private fun onActivityResult(resultCode: Int) {
+    private fun activityResultOperator(resultCode: Int) {
+        Log.d("ORBOT TEST APP", "operate the $resultCode")
         if (resultCode == RESULT_OK) {
+            Log.d("ORBOT TEST APP", "notifier start tor")
             startTor()
         }
     }
 
     private fun connect() {
-        val vpnIntent = VpnService.prepare(this)
+        val vpnIntent = VpnService.prepare(this)?.putNotSystem()
         if (vpnIntent != null) {
-            startActivityForResult(vpnIntent, 1)
+            Log.d("ORBOT TEST APP", "connect via result launcher")
+            resultLauncher.launch(vpnIntent)
         } else {
+            Log.d("ORBOT TEST APP", "start tor directly")
             startTor()
         }
     }
 
     private fun disconnect() {
+        Log.d("ORBOT TEST APP", "send DISCONNECT")
         sendIntentToService(OrbotConstants.ACTION_STOP)
         sendIntentToService(OrbotConstants.ACTION_STOP_VPN)
     }
 
     private fun startTor() {
+        Log.d("ORBOT TEST APP", "send CONNECT")
         sendIntentToService(OrbotConstants.ACTION_START)
         sendIntentToService(OrbotConstants.ACTION_START_VPN)
     }
 
+    fun Intent.putNotSystem(): Intent = this.putExtra(OrbotConstants.EXTRA_NOT_SYSTEM, true)
 
-    private fun sendIntentToService(intent: Intent) = ContextCompat.startForegroundService(this, intent)
+    private fun sendIntentToService(intent: Intent) =
+        ContextCompat.startForegroundService(this, intent.putNotSystem())
 
-    private fun sendIntentToService(action: String) = sendIntentToService(
-        Intent(this, OrbotService::class.java).apply {
+    private fun sendIntentToService(action: String) {
+        sendIntentToService(Intent(this, OrbotService::class.java).apply {
             this.action = action
         })
+    }
 
 }
 

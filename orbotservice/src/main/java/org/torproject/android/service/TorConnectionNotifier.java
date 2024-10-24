@@ -3,18 +3,14 @@ package org.torproject.android.service;
 import androidx.annotation.Nullable;
 
 public class TorConnectionNotifier {
-    public static String NOT_CONNECTED = "NOT_CONNECTED";
-    public static String CONNECTING = "CONNECTING";
-    public static String CONNECTED = "CONNECTED";
-    public static String DISCONNECTING = "DISCONNECTING";
 
     @Nullable
     private static TorConnectionListener torListener;
 
 
-    public static void notify(String message) {
+    public static void notify(TorConnectionStatus status) {
         if (torListener != null) {
-            torListener.onEvent(message);
+            torListener.onEvent(status.name());
         }
     }
 

@@ -191,10 +191,10 @@ public class OrbotService extends VpnService implements OrbotConstants {
         var title = getString(R.string.status_disabled);
         if (mCurrentStatus.equals(STATUS_STARTING) || notifyMsg.equals(getString(R.string.status_starting_up))) {
             title = getString(R.string.status_starting_up);
-            mUiHandler.post(() -> { TorConnectionNotifier.notify(TorConnectionNotifier.CONNECTING); });
+            mUiHandler.post(() -> TorConnectionNotifier.notify(TorConnectionStatus.CONNECTING));
         } else if (mCurrentStatus.equals(STATUS_ON)) {
             title = getString(R.string.status_activated);
-            mUiHandler.post(() -> { TorConnectionNotifier.notify(TorConnectionNotifier.CONNECTED); });
+            mUiHandler.post(() -> TorConnectionNotifier.notify(TorConnectionStatus.CONNECTED));
         }
 
         mNotifyBuilder.setContentTitle(title);
@@ -273,9 +273,7 @@ public class OrbotService extends VpnService implements OrbotConstants {
     }
 
     private void stopTorAsync(boolean showNotification) {
-        debug("stopTor");
-
-        mUiHandler.post(() -> { TorConnectionNotifier.notify(TorConnectionNotifier.DISCONNECTING); });
+        mUiHandler.post(() -> { TorConnectionNotifier.notify(TorConnectionStatus.DISCONNECTING); });
 
         if (showNotification) sendCallbackLogMessage(getString(R.string.status_shutting_down));
 
@@ -300,7 +298,7 @@ public class OrbotService extends VpnService implements OrbotConstants {
         mPortHTTP = -1;
         mPortTrans = -1;
 
-        mUiHandler.post(() -> { TorConnectionNotifier.notify(TorConnectionNotifier.NOT_CONNECTED); });
+        mUiHandler.post(() -> { TorConnectionNotifier.notify(TorConnectionStatus.NOT_CONNECTED); });
 
         if (!showNotification) {
             clearNotifications();
@@ -311,7 +309,7 @@ public class OrbotService extends VpnService implements OrbotConstants {
     private void stopTorOnError(String message) {
         stopTorAsync(false);
         showToolbarNotification(getString(R.string.unable_to_start_tor) + ": " + message, ERROR_NOTIFY_ID, R.drawable.ic_stat_notifyerr);
-        mUiHandler.post(() -> { TorConnectionNotifier.notify(TorConnectionNotifier.NOT_CONNECTED); });
+        mUiHandler.post(() -> { TorConnectionNotifier.notify(TorConnectionStatus.NOT_CONNECTED); });
     }
 
     private static HashMap<String, String> mFronts;
@@ -1129,7 +1127,7 @@ public class OrbotService extends VpnService implements OrbotConstants {
             }
         }
         showToolbarNotification(notificationMessage, NOTIFY_ID, R.drawable.ic_stat_tor);
-        mUiHandler.post(() -> { TorConnectionNotifier.notifyLog(logMessage); });
+        mUiHandler.post(() -> TorConnectionNotifier.notifyLog(logMessage));
         mHandler.post(() -> LocalBroadcastManager.getInstance(OrbotService.this).sendBroadcast(localIntent));
     }
 
