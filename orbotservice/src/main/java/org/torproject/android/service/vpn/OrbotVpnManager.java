@@ -73,6 +73,7 @@ public class OrbotVpnManager implements Handler.Callback, OrbotConstants {
     public OrbotVpnManager(OrbotService service) {
         mService = service;
         prefs = Prefs.getSharedPrefs(mService.getApplicationContext());
+        Log.d(TAG, "OrbotVpnManager init");
     }
 
     public void handleIntent(VpnService.Builder builder, Intent intent) {

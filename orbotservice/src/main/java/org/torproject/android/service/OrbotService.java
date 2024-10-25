@@ -159,6 +159,7 @@ public class OrbotService extends VpnService implements OrbotConstants {
     }
 
     private void clearNotifications() {
+        Log.d(TAG, "Notifications are cleared away");
         if (mNotificationManager != null) mNotificationManager.cancelAll();
 
         if (mOrbotRawEventListener != null) mOrbotRawEventListener.getNodes().clear();
@@ -286,9 +287,11 @@ public class OrbotService extends VpnService implements OrbotConstants {
             IPtProxy.stopLyrebird();
         }
 
+        Log.d(TAG, "Tor is being stopped");
         stopTor();
 
         //stop the foreground priority and make sure to remove the persistent notification
+        Log.d(TAG, "RM the foreground notification");
         stopForeground(!showNotification);
 
         if (showNotification) sendCallbackLogMessage(getString(R.string.status_disabled));
@@ -318,6 +321,7 @@ public class OrbotService extends VpnService implements OrbotConstants {
     public static void loadSnowflakeBridges(Context context) {
         if (mSnowflakeBridges != null) return;
         mSnowflakeBridges = new ArrayList<>();
+        Log.d(TAG, "`loadSnowflakeBridges` reads bridges");
         try {
             var reader = new BufferedReader(new InputStreamReader(context.getAssets().open("snowflake-brokers")));
             String line;
@@ -331,7 +335,7 @@ public class OrbotService extends VpnService implements OrbotConstants {
     public static void loadCdnFronts(Context context) {
         if (mFronts == null) {
             mFronts = new HashMap<>();
-
+            Log.d(TAG, "`loadCdnFronts` run");
             try {
                 var reader = new BufferedReader(new InputStreamReader(context.getAssets().open("fronts")));
                 String line;
@@ -612,6 +616,7 @@ public class OrbotService extends VpnService implements OrbotConstants {
                 enableSnowflakeProxy();
 
         } catch (RuntimeException re) {
+            Log.e(TAG, "Caught a RuntimeException in OrbotService onCreate " + re.getLocalizedMessage());
             //catch this to avoid malicious launches as document Cure53 Audit: ORB-01-009 WP1/2: Orbot DoS via exported activity (High)
         }
     }
@@ -639,7 +644,6 @@ public class OrbotService extends VpnService implements OrbotConstants {
             debug("IPtProxy state: " + IPtProxy.getStateLocation());
         } catch (Error e) {
             debug("IPtProxy state: not installed; " + e.getLocalizedMessage());
-
         }
     }
 
