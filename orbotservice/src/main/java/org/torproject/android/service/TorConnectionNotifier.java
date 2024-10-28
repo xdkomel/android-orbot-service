@@ -3,10 +3,8 @@ package org.torproject.android.service;
 import androidx.annotation.Nullable;
 
 public class TorConnectionNotifier {
-
     @Nullable
     private static TorConnectionListener torListener;
-
 
     public static void notify(TorConnectionStatus status) {
         if (torListener != null) {
@@ -17,6 +15,12 @@ public class TorConnectionNotifier {
     public static void notifyLog(String message) {
         if (torListener != null) {
             torListener.onLog(message);
+        }
+    }
+
+    public static void notifyBandwidth(long read, long written) {
+        if (torListener != null) {
+            torListener.onBandwidthUpdate(read, written);
         }
     }
 

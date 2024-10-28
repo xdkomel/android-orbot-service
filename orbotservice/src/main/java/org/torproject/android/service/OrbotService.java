@@ -1281,7 +1281,13 @@ public class OrbotService extends VpnService implements OrbotConstants {
         showToolbarNotification(message, NOTIFY_ID, icon);
     }
 
-    public static String formatBandwidthCount(Context context, long bitsPerSecond) {
+    public void notifyBandwidth(long read, long written) {
+        mUiHandler.post(
+            () -> TorConnectionNotifier.notifyBandwidth(read, written)
+        );
+    }
+
+    public String formatBandwidthCount(Context context, long bitsPerSecond) {
         var nf = NumberFormat.getInstance(Locale.getDefault());
         if (bitsPerSecond < 1e6)
             return nf.format(Math.round(((float) ((int) (bitsPerSecond * 10 / 1024)) / 10))) + context.getString(R.string.kibibyte_per_second);

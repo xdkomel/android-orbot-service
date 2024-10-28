@@ -50,6 +50,9 @@ class MainActivity : ComponentActivity() {
                 Log.d("ORBOT TEST APP", "receive log $message")
             }
 
+            override fun onBandwidthUpdate(read: Long, written: Long) {
+                Log.d("ORBOT TEST APP", "R $read, W $written")
+            }
         })
         ActivityResultNotifier.addListener(::activityResultOperator)
         initOrbot()
