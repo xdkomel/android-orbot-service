@@ -72,6 +72,7 @@ import java.util.concurrent.Executors;
 import IPtProxy.IPtProxy;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
@@ -79,7 +80,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
 public class OrbotService extends VpnService implements OrbotConstants {
-
     public final static String BINARY_TOR_VERSION = TorService.VERSION_NAME;
 
     static final int NOTIFY_ID = 1;
@@ -116,6 +116,13 @@ public class OrbotService extends VpnService implements OrbotConstants {
     private Handler mUiHandler = new Handler(Looper.getMainLooper());
     private boolean mHasPower = false;
     private boolean mHasWifi = false;
+
+    @Nullable
+    static private OrbotService instance;
+    @Nullable
+    static public OrbotService getInstance() {
+        return instance;
+    }
 
     /**
      * @param bridgeList bridges that were manually entered into Orbot settings
@@ -500,6 +507,7 @@ public class OrbotService extends VpnService implements OrbotConstants {
 
     // if someone stops during startup, we may have to wait for the conn port to be setup, so we can properly shutdown tor
     private void stopTor() {
+        Log.d(TAG, "Stopping Tor, should unbind the service: " + shouldUnbindTorService);
         if (shouldUnbindTorService) {
             unbindService(torServiceConnection); //unbinding from the tor service will stop tor
             shouldUnbindTorService = false;
@@ -531,6 +539,7 @@ public class OrbotService extends VpnService implements OrbotConstants {
     @Override
     public void onCreate() {
         super.onCreate();
+        instance = this;
         configLanguage();
         try {
             //set proper content URIs for current build flavor
@@ -629,7 +638,7 @@ public class OrbotService extends VpnService implements OrbotConstants {
         getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
     }
 
-    protected String getCurrentStatus() {
+    public String getCurrentStatus() {
         return mCurrentStatus;
     }
 

@@ -1,6 +1,5 @@
 package com.nullend.orbot_service_publisher
 
-import android.app.Activity
 import android.content.Intent
 import android.net.VpnService
 import android.os.Bundle
@@ -67,6 +66,13 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        Log.d(
+            "ORBOT TEST APP",
+            // NULL or OFF means not working
+            OrbotService.getInstance()?.currentStatus.let { status ->
+                "Service Status $status"
+            }
+        )
     }
 
     private fun initOrbot() {
@@ -108,7 +114,8 @@ class MainActivity : ComponentActivity() {
         sendIntentToService(OrbotConstants.ACTION_START_VPN)
     }
 
-    fun Intent.putNotSystem(): Intent = this.putExtra(OrbotConstants.EXTRA_NOT_SYSTEM, true)
+    private fun Intent.putNotSystem(): Intent =
+        this.putExtra(OrbotConstants.EXTRA_NOT_SYSTEM, true)
 
     private fun sendIntentToService(intent: Intent) =
         ContextCompat.startForegroundService(this, intent.putNotSystem())
