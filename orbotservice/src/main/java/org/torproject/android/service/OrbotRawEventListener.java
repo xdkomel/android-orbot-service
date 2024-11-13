@@ -38,40 +38,44 @@ public class OrbotRawEventListener implements RawEventListener {
     @Override
     public void onEvent(String keyword, String data) {
         String[] payload = data.split(" ");
-        if (TorControlCommands.EVENT_BANDWIDTH_USED.equals(keyword)) {
-            handleBandwidth(Long.parseLong(payload[0]), Long.parseLong(payload[1]));
-        } else if (TorControlCommands.EVENT_NEW_DESC.equals(keyword)) {
-            handleNewDescriptors(payload);
-        } else if (TorControlCommands.EVENT_STREAM_STATUS.equals(keyword)) {
+        try {
+            if (TorControlCommands.EVENT_BANDWIDTH_USED.equals(keyword)) {
+                handleBandwidth(Long.parseLong(payload[0]), Long.parseLong(payload[1]));
+            } else if (TorControlCommands.EVENT_NEW_DESC.equals(keyword)) {
+                handleNewDescriptors(payload);
+            } else if (TorControlCommands.EVENT_STREAM_STATUS.equals(keyword)) {
 
-            handleStreamEventExpandedNotifications(payload[1], payload[3], payload[2], payload[4]);
+                handleStreamEventExpandedNotifications(payload[1], payload[3], payload[2], payload[4]);
 
-            if (Prefs.useDebugLogging())
-                handleStreamEventsDebugLogging(payload[1], payload[0]);
-        } else if (TorControlCommands.EVENT_CIRCUIT_STATUS.equals(keyword)) {
-            String status = payload[1];
-            String circuitId = payload[0];
-            String path;
-            if (payload.length < 3 || status.equals(TorControlCommands.CIRC_EVENT_LAUNCHED))
-                path = "";
-            else path = payload[2];
-            handleCircuitStatus(status, circuitId, path);
+                if (Prefs.useDebugLogging())
+                    handleStreamEventsDebugLogging(payload[1], payload[0]);
+            } else if (TorControlCommands.EVENT_CIRCUIT_STATUS.equals(keyword)) {
+                String status = payload[1];
+                String circuitId = payload[0];
+                String path;
+                if (payload.length < 3 || status.equals(TorControlCommands.CIRC_EVENT_LAUNCHED))
+                    path = "";
+                else path = payload[2];
+                handleCircuitStatus(status, circuitId, path);
 
-            // don't bother looking up internal circuits that Orbot clients won't directly use
-            if (data.contains(CIRCUIT_BUILD_FLAG_ONE_HOP_TUNNEL) || data.contains(CIRCUIT_BUILD_FLAG_IS_INTERNAL)) {
-                ignoredInternalCircuits.add(Integer.parseInt(circuitId));
+                // don't bother looking up internal circuits that Orbot clients won't directly use
+                if (data.contains(CIRCUIT_BUILD_FLAG_ONE_HOP_TUNNEL) || data.contains(CIRCUIT_BUILD_FLAG_IS_INTERNAL)) {
+                    ignoredInternalCircuits.add(Integer.parseInt(circuitId));
+                }
+                handleCircuitStatusExpandedNotifications(status, circuitId, path);
+
+            } else if (TorControlCommands.EVENT_OR_CONN_STATUS.equals(keyword)) {
+                handleConnectionStatus(payload[1], payload[0]);
+            } else if (TorControlCommands.EVENT_DEBUG_MSG.equals(keyword) || TorControlCommands.EVENT_INFO_MSG.equals(keyword) ||
+                    TorControlCommands.EVENT_NOTICE_MSG.equals(keyword) || TorControlCommands.EVENT_WARN_MSG.equals(keyword) ||
+                    TorControlCommands.EVENT_ERR_MSG.equals(keyword)) {
+                handleDebugMessage(keyword, data);
+            } else {
+                String unrecognized = "Message (" + keyword + "): " + data;
+                mService.logNotice(unrecognized);
             }
-            handleCircuitStatusExpandedNotifications(status, circuitId, path);
-
-        } else if (TorControlCommands.EVENT_OR_CONN_STATUS.equals(keyword)) {
-            handleConnectionStatus(payload[1], payload[0]);
-        } else if (TorControlCommands.EVENT_DEBUG_MSG.equals(keyword) || TorControlCommands.EVENT_INFO_MSG.equals(keyword) ||
-                TorControlCommands.EVENT_NOTICE_MSG.equals(keyword) || TorControlCommands.EVENT_WARN_MSG.equals(keyword) ||
-                TorControlCommands.EVENT_ERR_MSG.equals(keyword)) {
-            handleDebugMessage(keyword, data);
-        } else {
-            String unrecognized = "Message (" + keyword + "): " + data;
-            mService.logNotice(unrecognized);
+        } catch (IndexOutOfBoundsException e) {
+            mService.debug("Exception in `onEvent` caught: " + e.getLocalizedMessage());
         }
     }
 
