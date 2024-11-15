@@ -104,8 +104,12 @@ class MainActivity : ComponentActivity() {
 
     private fun disconnect() {
         Log.d("ORBOT TEST APP", "send DISCONNECT")
-        sendIntentToService(OrbotConstants.ACTION_STOP)
         sendIntentToService(OrbotConstants.ACTION_STOP_VPN)
+        sendIntentToService(
+            Intent(this, OrbotService::class.java)
+                .setAction(OrbotConstants.ACTION_STOP)
+                .putExtra(OrbotConstants.ACTION_STOP_FOREGROUND_TASK, true)
+        )
     }
 
     private fun startTor() {

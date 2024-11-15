@@ -3,6 +3,7 @@
 
 package org.torproject.android.service;
 
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
 import static org.torproject.jni.TorService.ACTION_ERROR;
 
 import android.annotation.SuppressLint;
@@ -226,7 +227,10 @@ public class OrbotService extends VpnService implements OrbotConstants {
             mNotifyBuilder.setProgress(0, 0, false); // removes progress bar
         }
 
-        startForeground(NOTIFY_ID, mNotifyBuilder.build());
+        startForeground(NOTIFY_ID, mNotifyBuilder.build(),
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ?
+                        FOREGROUND_SERVICE_TYPE_DATA_SYNC : 0
+        );
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
